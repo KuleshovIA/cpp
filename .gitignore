@@ -1,3 +1,6 @@
+*.ii
+*.s
+
 # Prerequisites
 *.d
 
