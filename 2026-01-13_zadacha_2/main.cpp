@@ -3,18 +3,18 @@
 #include <iostream>
 
 int main () {
-	int number_of_array_elements;
-	std::cin >> number_of_array_elements;
+	int array_size;
+	std::cin >> array_size;
 	
-	int *array = new int[number_of_array_elements];
+	int *array = new int[array_size];
 	
-	for (int i = 0; i < number_of_array_elements; i++) {
-		srand(time(0));
+	srand(time(0));
+	for (int i = 0; i < array_size; i++) {
 		*(array + i) = std::rand();
 	}
 	
-	for (int i = 0; i < number_of_array_elements; i++) {
-		std::cout << *array + i << ' ';
+	for (int i = 0; i < array_size; i++) {
+		std::cout << array[0 + i] << ' ';
 	}
 	std::cout << std::endl;
 }

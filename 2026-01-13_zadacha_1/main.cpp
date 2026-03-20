@@ -3,27 +3,27 @@
 int main () {
 	int array[] = {3, 6, 5, 9, 10};
 	
-	float lesser, bigger;
+	int lesser, bigger;
 	lesser = array[0];
 	bigger = array[0];
 	
-	for (int i : array) {
-		if (i < lesser) {
-			lesser = i;
+	for (int item : array) {
+		if (item < lesser) {
+			lesser = item;
 		}
-		if (i > bigger) {
-			bigger = i;
+		if (item > bigger) {
+			bigger = item;
 		}
 	}
 	
 	std::cout << "Массив:" << std::endl;
-	for (int i : array) {
-		std::cout << i << ' ';
+	for (int item : array) {
+		std::cout << item << ' ';
 	}
 	std::cout << std::endl;
 	std::cout << "Наибольшее значение:" << std::endl;
 	std::cout << bigger << std::endl;
 	std::cout << "Наименьшее значение:" << std::endl;
 	std::cout << lesser << std::endl;
-	std::cout << "Наибольшее значение больше наименьшего в " << bigger/lesser << " раз" << std::endl;
+	std::cout << "Наибольшее значение больше наименьшего в " << (static_cast <double> (bigger)) / lesser << " раз" << std::endl;
 }

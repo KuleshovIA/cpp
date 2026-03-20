@@ -2,18 +2,18 @@
 #include <string>
 
 int main () {
-	int number_of_array_elements;
-	std::cin >> number_of_array_elements;
+	int array_size;
+	std::cin >> array_size;
 	//std::cin.ignore();
 	
-	int *array = new int[number_of_array_elements];
+	int *array = new int[array_size];
 	
-	for (int i = 0; i < number_of_array_elements; i++) {
+	for (int i = 0; i < array_size; i++) {
 		std::cin >> array[i];
 	}
 	
-	for (int i = number_of_array_elements-1; i >= 0; i--) {
-		std::cout << array[i] << " ";
+	for (int i = array_size - 1; i >= 0; i--) {
+		std::cout << array[i] << ' ';
 	}
 	
 }

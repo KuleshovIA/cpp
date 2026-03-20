@@ -3,10 +3,10 @@
 int main() {
 	std::cout << "Введите номер дня недели:" << std::endl;
 	
-	int number_of_day;
-	std::cin >> number_of_day;
+	int day_number;
+	std::cin >> day_number;
 	
-	switch (number_of_day) {
+	switch (day_number) {
 		case 1:
 			std::cout << "Понедельник" << std::endl;
 		case 2:
