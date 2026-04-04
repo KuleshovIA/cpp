@@ -21,28 +21,57 @@ const IBusko::Menu_item* IBusko::show_menu (const Menu_item* current) {
 	
 	return current->children[user_input];
 }
-
-const IBusko::Menu_item* IBusko::study_summ(const Menu_item* current) {
+/*
+const IBusko::Menu_item* IBusko::study_algebra (const Menu_item* current) {
 	std::cout << current->title << std::endl;
+	std::cout << std::endl;
 	return current->parent;
 }
 
-const IBusko::Menu_item* IBusko::study_substract(const Menu_item* current) {
+const IBusko::Menu_item* IBusko::study_analysis (const Menu_item* current) {
 	std::cout << current->title << std::endl;
+	std::cout << std::endl;
 	return current->parent;
 }
-
-const IBusko::Menu_item* IBusko::study_multiply(const Menu_item* current) {
+*/
+const IBusko::Menu_item* IBusko::go_back (const Menu_item* current) {
 	std::cout << current->title << std::endl;
-	return current->parent;
-}
-
-const IBusko::Menu_item* IBusko::study_divide(const Menu_item* current) {
-	std::cout << current->title << std::endl;
-	return current->parent;
-}
-
-const IBusko::Menu_item* IBusko::study_go_back(const Menu_item* current) {
-	std::cout << current->title << std::endl;
+	std::cout << std::endl;
 	return current->parent->parent;
+}
+
+const IBusko::Menu_item* IBusko::algebra_summ (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
+}
+
+const IBusko::Menu_item* IBusko::algebra_substract (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
+}
+
+const IBusko::Menu_item* IBusko::algebra_multiply (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
+}
+
+const IBusko::Menu_item* IBusko::algebra_divide (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
+}
+
+const IBusko::Menu_item* IBusko::analysis_diffcalc (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
+}
+
+const IBusko::Menu_item* IBusko::analysis_intecalc (const Menu_item* current) {
+	std::cout << current->title << std::endl;
+	std::cout << std::endl;
+	return current->parent;
 }
