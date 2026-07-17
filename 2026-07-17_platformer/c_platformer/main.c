@@ -3,7 +3,7 @@
 
 #include <math.h>  
 
-#define mapWidth 80
+#define mapWidth 90
 #define mapHeight 25
 
 typedef struct SObject {
@@ -37,7 +37,7 @@ void SetObjectPos(TObject *obj, float xPos, float yPos) {
 }
 
 void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeight) {
-	SetObjectPos(obj; xPos; yPos);
+	SetObjectPos(obj, xPos, yPos);
 	(*obj).width = oWidth;
 	(*obj).height = oHeight;
 }
@@ -50,7 +50,7 @@ void PutObjectOnMap(TObject obj) {
 	
 	for (int i = ix; i < (ix + iWidth); i++) {
 		for (int j = iy; j < (iy + iHeight); j++) {
-			map[i][i] = '@';
+			map[j][i] = '@';
 		}
 	}
 }
