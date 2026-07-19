@@ -17,8 +17,13 @@ typedef struct SObject {
 
 char map[mapHeight][mapWidth + 1];
 TObject mario;
+
 TObject *brick = NULL;
 int brickLength;
+
+TObject *moving = NULL;
+int movingLength;
+
 int level = 1;
 
 void ClearMap() {
@@ -114,6 +119,9 @@ void HorizonMoveMap(float dx) {
 	for (int i = 0; i < brickLength; i++) {
 		brick[i].x += dx;
 	}
+	for (int i = 0; i < movingLength; i++) {
+		moving[i].x += dx;
+	}
 }
 
 bool IsCollision(TObject o1, TObject o2) {
@@ -133,6 +141,9 @@ void CreateLevel(int lvl) {
 		InitObject(brick + 3, 120, 15, 10, 10, '#');
 		InitObject(brick + 4, 150, 20, 40, 5, '#');
 		InitObject(brick + 5, 210, 15, 10, 10, '+');
+		movingLength = 1;
+		moving = realloc(moving, sizeof(*moving) * movingLength);
+		InitObject(moving+0, 25, 10, 3, 2, 'o');
 	}
 	if (lvl == 2) {
 		brickLength = 4;
@@ -158,8 +169,12 @@ int main() {
 		if (mario.y > mapHeight) CreateLevel(level);
 		
 		VertMoveObject(&mario);
-		for (int i = 0; i < brickLength; i++){
+		for (int i = 0; i < brickLength; i++) {
 			PutObjectOnMap(brick[i]);
+		}
+		for (int i = 0; i < movingLength; i++) {
+			VertMoveObject(moving + i);
+			PutObjectOnMap(moving[i]);
 		}
 		PutObjectOnMap(mario);
 		
