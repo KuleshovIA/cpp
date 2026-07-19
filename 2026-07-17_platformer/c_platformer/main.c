@@ -132,6 +132,8 @@ int main() {
 		if (GetKeyState('A') < 0) HorizonMoveMap(1);
 		if (GetKeyState('D') < 0) HorizonMoveMap(-1);
 		
+		if (mario.y > mapHeight) CreateLevel();
+		
 		VertMoveObject(&mario);
 		for (int i = 0; i < brickLength; i++){
 			PutObjectOnMap(brick[i]);
