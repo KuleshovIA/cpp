@@ -68,12 +68,14 @@ void VertMoveObject(TObject *obj) {
 	
 	for (int i = 0; i < brickLength; i++) {
 		if (IsCollision(*obj, brick[i])) {
+			if (obj[0].vertSpeed > 0) {
+				obj[0].isFly = false;
+			}
 			(*obj).y -= (*obj).vertSpeed;
 			(*obj).vertSpeed = 0;
-			(*obj).isFly = false;
 			if (brick[i].cType == '+') {
 				level++;
-				if (level > 2) level = 1;
+				if (level > 3) level = 1;
 				CreateLevel(level);
 				Sleep(1000);
 			}
@@ -190,7 +192,17 @@ void CreateLevel(int lvl) {
 	
 	if (lvl == 1) {
 		brickLength = 0;
-		brick = realloc(brick, sizeof(*brick) * brickLength);
+		InitObject(GetNewBrick(), 20, 20, 40, 5, '#');
+		InitObject(GetNewBrick(), 60, 15, 40, 10, '#');
+		InitObject(GetNewBrick(), 30, 10, 5, 3, '?');
+		InitObject(GetNewBrick(), 50, 10, 5, 3, '?');
+		InitObject(GetNewBrick(), 100, 20, 20, 5, '#');
+		InitObject(GetNewBrick(), 120, 15, 10, 10, '#');
+		InitObject(GetNewBrick(), 150, 20, 40, 5, '#');
+		InitObject(GetNewBrick(), 210, 15, 10, 10, '+');
+	}
+	if (lvl == 2) {
+		brickLength = 0;
 		InitObject(GetNewBrick(), 20, 20, 40, 5, '#');
 		InitObject(GetNewBrick(), 60, 15, 10, 10, '#');
 		InitObject(GetNewBrick(), 80, 20, 20, 5, '#');
@@ -205,7 +217,7 @@ void CreateLevel(int lvl) {
 		InitObject(GetNewMoving(), 160, 10, 3, 2, 'o');
 		InitObject(GetNewMoving(), 175, 10, 3, 2, 'o');
 	}
-	if (lvl == 2) {
+	if (lvl == 3) {
 		brickLength = 0;
 		InitObject(GetNewBrick(), 20, 20, 40, 5, '#');
 		InitObject(GetNewBrick(), 80, 20, 15, 5, '#');
