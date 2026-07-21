@@ -57,9 +57,16 @@ void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeigh
 	(*obj).cType = inType;
 	(*obj).horizonSpeed = 0.2;
 }
+void CreateLevel(int lvl);
+
+void PlayerDead() {
+	system("color 4F");
+	Sleep(500);
+	CreateLevel(level);
+}
 
 bool IsCollision(TObject o1, TObject o2);
-void CreateLevel(int lvl);
+
 TObject* GetNewMoving();
 
 void VertMoveObject(TObject *obj) {
@@ -109,7 +116,7 @@ void MarioCollision() {
 					i--;
 					continue;
 				} else {
-					CreateLevel(level);
+					PlayerDead();
 				}
 			}
 			if (moving[i].cType == '$') {
@@ -268,7 +275,7 @@ int main() {
 		if (GetKeyState('A') < 0) HorizonMoveMap(1);
 		if (GetKeyState('D') < 0) HorizonMoveMap(-1);
 		
-		if (mario.y > mapHeight) CreateLevel(level);
+		if (mario.y > mapHeight) PlayerDead();
 		
 		VertMoveObject(&mario);
 		MarioCollision();
