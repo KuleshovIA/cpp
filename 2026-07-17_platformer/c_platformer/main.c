@@ -7,7 +7,7 @@
 #define mapWidth 90
 #define mapHeight 25
 
-typedef struct SObject {
+typedef struct SObject { //0.5 МБ на первом уровне
 	float x, y;
 	float width, height;
 	float vertSpeed;
@@ -187,7 +187,7 @@ void HorizonMoveMap(float dx) {
 			return;
 		}
 	}
-	mario.x += dx;  
+	mario.x += dx;
 	
 	for (int i = 0; i < brickLength; i++) {
 		brick[i].x += dx;
@@ -277,7 +277,127 @@ void CreateLevel(int lvl) {
 		InitObject(GetNewMoving(), 120, 10, 3, 2, 'o');
 		InitObject(GetNewMoving(), 130, 10, 3, 2, 'o');
 	}
-	maxLvl = 3;
+	if (lvl == 4)
+    {
+        InitObject(GetNewBrick(),  0, 21, 207, 4, '#');
+
+            InitObject(GetNewBrick(), 48, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 60, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 63, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 66, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 69, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 72, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 66, 5, 3, 2, '?');
+
+        InitObject(GetNewBrick(), 84, 17, 6, 2, '#');
+        InitObject(GetNewBrick(), 85, 19, 4, 2, '#');
+
+        InitObject(GetNewBrick(), 114, 15, 6, 2, '#');
+        InitObject(GetNewBrick(), 115, 17, 4, 4, '#');
+
+        InitObject(GetNewBrick(), 138, 13, 6, 2, '#');
+        InitObject(GetNewBrick(), 139, 15, 4, 6, '#');
+
+        InitObject(GetNewBrick(), 171, 13, 6, 2, '#');
+        InitObject(GetNewBrick(), 172, 15, 4, 6, '#');
+        
+        InitObject(GetNewBrick(),  213, 21, 45, 4, '#');
+            InitObject(GetNewBrick(), 231, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 234, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 237, 13, 3, 2, '#');
+                InitObject(GetNewBrick(), 240, 5, 24, 2, '#');
+        
+        InitObject(GetNewBrick(),  267, 21, 192, 4, '#');
+                InitObject(GetNewBrick(), 273, 5, 9, 2, '#');
+                InitObject(GetNewBrick(), 282, 5, 3, 2, '?');
+            InitObject(GetNewBrick(), 282, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 300, 13, 6, 2, '#');
+            InitObject(GetNewBrick(), 318, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 327, 13, 3, 2, '?');
+                InitObject(GetNewBrick(), 327, 5, 3, 2, '?');
+            InitObject(GetNewBrick(), 336, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 354, 13, 3, 2, '#');
+                InitObject(GetNewBrick(), 363, 5, 9, 2, '#');
+                InitObject(GetNewBrick(), 384, 5, 3, 2, '#');
+                InitObject(GetNewBrick(), 387, 5, 3, 2, '?');
+                InitObject(GetNewBrick(), 390, 5, 3, 2, '?');
+                InitObject(GetNewBrick(), 393, 5, 3, 2, '#');
+            InitObject(GetNewBrick(), 387, 13, 6, 2, '#');
+            
+            InitObject(GetNewBrick(), 402, 19, 12, 2, '#');
+            InitObject(GetNewBrick(), 405, 17, 9, 2, '#');
+            InitObject(GetNewBrick(), 408, 15, 6, 2, '#');
+            InitObject(GetNewBrick(), 411, 13, 3, 2, '#');
+
+            InitObject(GetNewBrick(), 420, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 420, 15, 6, 2, '#');
+            InitObject(GetNewBrick(), 420, 17, 9, 2, '#');
+            InitObject(GetNewBrick(), 420, 19, 12, 2, '#');
+
+            InitObject(GetNewBrick(), 444, 19, 15, 2, '#');
+            InitObject(GetNewBrick(), 447, 17, 12, 2, '#');
+            InitObject(GetNewBrick(), 450, 15, 9, 2, '#');
+            InitObject(GetNewBrick(), 453, 13, 6, 2, '#');
+        
+        InitObject(GetNewBrick(), 465, 21, 165, 4, '#');
+            InitObject(GetNewBrick(), 465, 13, 3, 2, '#');
+            InitObject(GetNewBrick(), 465, 15, 6, 2, '#');
+            InitObject(GetNewBrick(), 465, 17, 9, 2, '#');
+            InitObject(GetNewBrick(), 465, 19, 12, 2, '#');
+
+            InitObject(GetNewBrick(), 489, 17, 6, 2, '#');
+            InitObject(GetNewBrick(), 490, 19, 4, 2, '#');
+
+            InitObject(GetNewBrick(), 504, 13, 6, 2, '#');
+            InitObject(GetNewBrick(), 510, 13, 3, 2, '?');
+            InitObject(GetNewBrick(), 513, 13, 3, 2, '#');
+
+            InitObject(GetNewBrick(), 537, 17, 6, 2, '#');
+            InitObject(GetNewBrick(), 538, 19, 4, 2, '#');
+            
+            InitObject(GetNewBrick(), 543, 19, 27, 2, '#');
+            InitObject(GetNewBrick(), 546, 17, 24, 2, '#');
+            InitObject(GetNewBrick(), 549, 15, 21, 2, '#');
+            InitObject(GetNewBrick(), 552, 13, 18, 2, '#');
+            InitObject(GetNewBrick(), 555, 11, 15, 2, '#');
+            InitObject(GetNewBrick(), 558,  9, 12, 2, '#');
+            InitObject(GetNewBrick(), 561,  7,  9, 2, '#');
+            InitObject(GetNewBrick(), 564,  5,  6, 2, '#');
+
+            
+            InitObject(GetNewBrick(), 600, 16, 10, 5, '+');
+                InitObject(GetNewBrick(), 600, 15, 1, 1, '+');
+                InitObject(GetNewBrick(), 609, 15, 1, 1, '+');
+                InitObject(GetNewBrick(), 604, 17, 2, 4, '-');
+            InitObject(GetNewBrick(), 602, 12, 6, 4, '+');
+                InitObject(GetNewBrick(), 602, 11, 1, 1, '+');
+                InitObject(GetNewBrick(), 604, 11, 2, 1, '+');
+                InitObject(GetNewBrick(), 607, 11, 1, 1, '+');
+                InitObject(GetNewBrick(), 603, 13, 1, 2, '-');
+                InitObject(GetNewBrick(), 606, 13, 1, 2, '-');
+
+        InitObject(GetNewMoving(), 66, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 121, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 153, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 159, 16, 3, 2, 'o');
+
+            InitObject(GetNewMoving(), 238, 1, 3, 2, 'o');
+            InitObject(GetNewMoving(), 246, 1, 3, 2, 'o');
+        InitObject(GetNewMoving(), 288, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 294, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 321, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 342, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 348, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 370, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 376, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 385, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 391, 16, 3, 2, 'o');
+
+        InitObject(GetNewMoving(), 522, 16, 3, 2, 'o');
+        InitObject(GetNewMoving(), 526, 16, 3, 2, 'o');
+
+    }
+	maxLvl = 4;
 }
 
 int main() {
