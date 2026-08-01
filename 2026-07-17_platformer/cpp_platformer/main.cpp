@@ -41,7 +41,8 @@ void is_collision(Object& obj1, Object& obj2);
 void apply_gravity(Object& obj);
 void vertical_move(Object& obj);
 int find_brick_collision(const std::vector<Object>& bricks, const Object& obj);
-void resolve_vertical_collision(Object& obj, const std::vector<Object>& bricks, int i);
+void resolve_vertical_collision(Object& obj, const Object& brick);
+void update_vertical(GameState& game, Object& obj);
 
 
 //Возможно, лучше будет создать функцию, которая будет ставить на карту всё, что надо
@@ -54,11 +55,13 @@ int main() {
 	do {
 		clear_map(game.map);
 		//vertical_move(game);
+		update_vertical(game, game.character);
+		/*
 		apply_gravity(game.character);
 		vertical_move(game.character);
 		resolve_vertical_collision(game.character, game.current_level.bricks,
 								   find_brick_collision(game.current_level.bricks, game.character));
-		
+		*/
 		
 		set_cursor();
 		put_object_on_map(game.map, game.character);
@@ -226,18 +229,26 @@ int find_brick_collision(const std::vector<Object>& bricks, const Object& obj) {
 	return -1;
 }
 
-void resolve_vertical_collision(Object& obj, const std::vector<Object>& bricks, int i) {
-	if (i >= 0) {
-		if (obj.vertical_speed > 0) {
-			obj.y = bricks[i].y - obj.height;
-			obj.is_fly = false;
-		} else if (obj.vertical_speed < 0) {
-			obj.y = bricks[i].y + bricks[i].height;
-		}
-		obj.vertical_speed = 0;
+void resolve_vertical_collision(Object& obj, Object& brick) {
+	if (obj.vertical_speed > 0) {
+		obj.y = brick.y - obj.height;
+		obj.is_fly = false;
+	} else if (obj.vertical_speed < 0) {
+		obj.y = brick.y + brick.height;
 	}
+	obj.vertical_speed = 0;
 }
 
+void update_vertical(GameState& game, Object& obj) {
+	apply_gravity(obj);
+	vertical_move(obj);
+	
+	int brick_index = find_brick_collision(game.current_level.bricks, obj);
+	
+	if (brick_index >= 0) {
+		resolve_vertical_collision(obj, game.current_level.bricks[brick_index]);
+	}
+}
 //void vertical_brick_contact()
 /*
 Понадобится функция, которая будет принимать Object и делать push_back к game.current_level.moving, чтобы добавлять
