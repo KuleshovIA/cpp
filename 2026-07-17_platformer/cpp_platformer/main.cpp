@@ -44,7 +44,12 @@ int find_brick_collision(const std::vector<Object>& bricks, const Object& obj);
 void resolve_vertical_collision(Object& obj, const Object& brick);
 void update_vertical(GameState& game, Object& obj);
 void horizontal_move_map(GameState& game, float dx);
-void handle_input (GameState& game);
+void handle_input(GameState& game);
+void update_player(GameState& game);
+void update_moving(GameState& game);
+void update(GameState& game);
+void render(GameState& game);
+
 
 
 //Возможно, лучше будет создать функцию, которая будет ставить на карту всё, что надо
@@ -54,23 +59,9 @@ int main() {
 	init_level(game.level_number, game.current_level);
 	//game.current_level = init_level(game.level);
 	do {
-		clear_map(game.map);
 		handle_input(game);
-		//vertical_move(game);
-		update_vertical(game, game.character);
-		
-		set_cursor();
-		put_object_on_map(game.map, game.character);
-		for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
-			put_object_on_map(game.map, game.current_level.bricks[i]);
-		}
-		for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
-			put_object_on_map(game.map, game.current_level.moving[i]);
-			update_vertical(game, game.current_level.moving[i]);
-		}
-		
-		show_map(game.map);
-		Sleep(10);
+		update(game);
+		render(game);
 	} while (GetKeyState(VK_ESCAPE) >= 0);
 	
 	return 0;
@@ -250,34 +241,44 @@ void horizontal_move_map(GameState& game, float dx) {
 	}
 }
 
-//Вообще не работает функция движения карты: персонаж двигается в каких-то пределах (спросить?)
-/*
-void horizontal_move_map(GameState& game, float dx) {
-	game.character.x -= dx;
-	
-	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
-		if (is_collision(game.character, game.current_level.bricks[i])) {
-			game.character.x += dx;
-			return;
-		}
-	}
-	
-	game.character.x += dx;
-	
-	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
-		game.current_level.bricks[i].x += dx;
-	}
-	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
-		game.current_level.moving[i].x += dx;
-	}
-}
-*/
-void handle_input (GameState& game) {
+void handle_input(GameState& game) {
 	if (GetKeyState('A') < 0) horizontal_move_map(game, 1);
 	if (GetKeyState('D') < 0) horizontal_move_map(game, -1);
 	if (game.character.is_fly == false && GetKeyState(VK_SPACE) < 0) {
 		game.character.vertical_speed = -1;
 	}
+}
+
+void update_player(GameState& game) {
+	update_vertical (game, game.character);
+}
+
+void update_moving(GameState& game) {
+	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
+		update_vertical (game, game.current_level.moving[i]);
+	}
+}
+
+void update(GameState& game) {
+	update_player(game);
+	update_moving(game);
+}
+
+void render(GameState& game) {
+	clear_map(game.map);
+	set_cursor();
+	
+	put_object_on_map(game.map, game.character);
+	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
+			put_object_on_map(game.map, game.current_level.bricks[i]);
+	}
+	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
+		put_object_on_map(game.map, game.current_level.moving[i]);
+		update_vertical(game, game.current_level.moving[i]);
+	}
+	
+	show_map(game.map);
+	Sleep(10);
 }
 //void vertical_brick_contact()
 /*
