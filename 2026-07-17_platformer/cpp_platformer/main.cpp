@@ -49,6 +49,7 @@ void update_player(GameState& game);
 void update_moving(GameState& game);
 void update(GameState& game);
 void render(GameState& game);
+void update_horizontal(GameState& game, Object& obj);
 
 
 
@@ -222,7 +223,6 @@ void update_vertical(GameState& game, Object& obj) {
 	}
 }
 
-/*  */
 void horizontal_move_map(GameState& game, float dx) {
 	game.character.x -= dx;
 	
@@ -255,7 +255,8 @@ void update_player(GameState& game) {
 
 void update_moving(GameState& game) {
 	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
-		update_vertical (game, game.current_level.moving[i]);
+		update_vertical(game, game.current_level.moving[i]);
+		update_horizontal(game, game.current_level.moving[i]);
 	}
 }
 
@@ -279,6 +280,17 @@ void render(GameState& game) {
 	
 	show_map(game.map);
 	Sleep(10);
+}
+
+void update_horizontal(GameState& game, Object& obj) {
+	obj.x += obj.horizontal_speed;
+	
+	int brick_index = find_brick_collision(game.current_level.bricks, obj);
+	if (brick_index >= 0) {
+		obj.x -= obj.horizontal_speed;
+		obj.horizontal_speed = -obj.horizontal_speed;
+		return;
+	}
 }
 //void vertical_brick_contact()
 /*
