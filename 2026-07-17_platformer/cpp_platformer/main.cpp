@@ -36,13 +36,15 @@ void put_object_on_map(char(&map)[][MAP_WIDTH + 1], const Object& obj);
 bool is_pos_in_map(int x, int y);
 Object init_object(float x_pos, float y_pos, float o_width, float o_height, char in_type);
 void init_level(int level_number, Level& current_level);
-void is_collision(Object& obj1, Object& obj2);
+bool is_collision(const Object& obj1, const Object& obj2);
 //Level init_level(int level);
 void apply_gravity(Object& obj);
 void vertical_move(Object& obj);
 int find_brick_collision(const std::vector<Object>& bricks, const Object& obj);
 void resolve_vertical_collision(Object& obj, const Object& brick);
 void update_vertical(GameState& game, Object& obj);
+void horizontal_move_map(GameState& game, float dx);
+void handle_input (GameState& game);
 
 
 //Возможно, лучше будет создать функцию, которая будет ставить на карту всё, что надо
@@ -51,21 +53,22 @@ int main() {
 	game.character = init_object(39, 10, 3, 3, '@');
 	init_level(game.level_number, game.current_level);
 	//game.current_level = init_level(game.level);
-	//СМ. строку после is_collision
 	do {
 		clear_map(game.map);
+		handle_input(game);
 		//vertical_move(game);
 		update_vertical(game, game.character);
-		/*
-		apply_gravity(game.character);
-		vertical_move(game.character);
-		resolve_vertical_collision(game.character, game.current_level.bricks,
-								   find_brick_collision(game.current_level.bricks, game.character));
-		*/
 		
 		set_cursor();
 		put_object_on_map(game.map, game.character);
-		put_object_on_map(game.map, game.current_level.bricks[0]);
+		for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
+			put_object_on_map(game.map, game.current_level.bricks[i]);
+		}
+		for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
+			put_object_on_map(game.map, game.current_level.moving[i]);
+			update_vertical(game, game.current_level.moving[i]);
+		}
+		
 		show_map(game.map);
 		Sleep(10);
 	} while (GetKeyState(VK_ESCAPE) >= 0);
@@ -147,6 +150,8 @@ void init_level(int level_number, Level& current_level) {
 			current_level.moving.push_back(init_object(25, 10, 3, 2, 'o'));
 			current_level.moving.push_back(init_object(80, 10, 3, 2, 'o'));
 			
+			break;
+			
 		case 2:
 			current_level.bricks.push_back(init_object(20, 20, 40, 5, '#'));
 			current_level.bricks.push_back(init_object(60, 15, 10, 10, '#'));
@@ -161,6 +166,8 @@ void init_level(int level_number, Level& current_level) {
 			current_level.moving.push_back(init_object(120, 10, 3, 2, 'o'));
 			current_level.moving.push_back(init_object(160, 10, 3, 2, 'o'));
 			current_level.moving.push_back(init_object(175, 10, 3, 2, 'o'));
+			
+			break;
 		
 		case 3:
 			current_level.bricks.push_back(init_object(20, 20, 40, 5, '#'));
@@ -174,42 +181,16 @@ void init_level(int level_number, Level& current_level) {
 			current_level.moving.push_back(init_object(90, 10, 3, 2, 'o'));
 			current_level.moving.push_back(init_object(120, 10, 3, 2, 'o'));
 			current_level.moving.push_back(init_object(130, 10, 3, 2, 'o'));
+			
+			break;
 	}
-}
-/*
-void vertical_move(Object& obj) {
-	obj.is_fly = true;
-	obj.vertical_speed += 0.05;
-	obj.y += obj.vertical_speed;
-	
 }
 
-void vertical_move(GameState& game) {
-	game.character.is_fly = true;
-	game.character.vertical_speed += 0.05;
-	game.character.y += game.character.vertical_speed;
-}
-*/
-/*
-Как оказалось, на* эту функцию, рефакторинг так рефакторинг!
-void vertical_move(Object& obj, Level& current_level) {
-	obj.is_fly = true;
-	obj.vertical_speed += 0.05;
-	obj.y += obj.vertical_speed;
-	
-	for (size_t i = 0; i != current_level.bricks.size(); ++i) {
-		if (is_collision(obj, current_level.brricks[i])) {
-			//Посмотреть 8 совет от Qwen (6 и 7 тоже)...
-		}
-	}
-}
-*/
 //Может быть стоит потом написать отдельную функцию для разрешения коллизий?
 bool is_collision(const Object& obj1, const Object& obj2) {
 	return (obj1.x + obj1.width > obj2.x && obj1.x < obj2.x + obj2.width &&
 			obj1.y + obj1.height > obj2.y && obj1.y < obj2.y + obj2.height);
 }
-//Вызов этой функции нужно включить в vertical_move (сверху), но она не может передать второй параметр!
 
 void apply_gravity(Object& obj) {
 	obj.is_fly = true;
@@ -247,6 +228,55 @@ void update_vertical(GameState& game, Object& obj) {
 	
 	if (brick_index >= 0) {
 		resolve_vertical_collision(obj, game.current_level.bricks[brick_index]);
+	}
+}
+
+/*  */
+void horizontal_move_map(GameState& game, float dx) {
+	game.character.x -= dx;
+	
+	int brick_index = find_brick_collision(game.current_level.bricks, game.character);
+	if (brick_index >= 0) {
+		game.character.x += dx;
+		return;
+	}
+	game.character.x += dx;
+	
+	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
+		game.current_level.bricks[i].x += dx;
+	}
+	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
+		game.current_level.moving[i].x += dx;
+	}
+}
+
+//Вообще не работает функция движения карты: персонаж двигается в каких-то пределах (спросить?)
+/*
+void horizontal_move_map(GameState& game, float dx) {
+	game.character.x -= dx;
+	
+	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
+		if (is_collision(game.character, game.current_level.bricks[i])) {
+			game.character.x += dx;
+			return;
+		}
+	}
+	
+	game.character.x += dx;
+	
+	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
+		game.current_level.bricks[i].x += dx;
+	}
+	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
+		game.current_level.moving[i].x += dx;
+	}
+}
+*/
+void handle_input (GameState& game) {
+	if (GetKeyState('A') < 0) horizontal_move_map(game, 1);
+	if (GetKeyState('D') < 0) horizontal_move_map(game, -1);
+	if (game.character.is_fly == false && GetKeyState(VK_SPACE) < 0) {
+		game.character.vertical_speed = -1;
 	}
 }
 //void vertical_brick_contact()
