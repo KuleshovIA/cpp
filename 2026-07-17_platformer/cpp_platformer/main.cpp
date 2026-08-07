@@ -13,7 +13,8 @@ struct Object {
 	float width, height;
 	char type;
 	float horizontal_speed, vertical_speed;
-	bool is_fly = false; //Или TRUE? 
+	bool is_fly = false; //Или TRUE?
+	bool is_alive = true;
 };
 
 struct Level {
@@ -50,10 +51,15 @@ void update_moving(GameState& game);
 void update(GameState& game);
 void render(GameState& game);
 void update_horizontal(GameState& game, Object& obj);
+void handle_contacts(GameState& game);
+void clear_dead_objects(std::vector<Object>& moving);
+void process_events(GameState& game);
 
 
 
-//Возможно, лучше будет создать функцию, которая будет ставить на карту всё, что надо
+/*Может быть во всех функциях (или не во всех), что проверяют контакт персонажа с чем-то, лучше сделать
+принудительную проверку всех элементов вектора через цикл do while?*/
+//Надо будет "причесать" параметры функций, чтобы избежать слишком длинных обращений
 int main() {
 	GameState game;
 	game.character = init_object(39, 10, 3, 3, '@');
@@ -263,6 +269,9 @@ void update_moving(GameState& game) {
 void update(GameState& game) {
 	update_player(game);
 	update_moving(game);
+	handle_contacts(game);
+	clear_dead_objects(game.current_level.moving);
+	process_events(game);
 }
 
 void render(GameState& game) {
@@ -271,11 +280,11 @@ void render(GameState& game) {
 	
 	put_object_on_map(game.map, game.character);
 	for (size_t i = 0; i != game.current_level.bricks.size(); ++i) {
-			put_object_on_map(game.map, game.current_level.bricks[i]);
+		put_object_on_map(game.map, game.current_level.bricks[i]);
 	}
 	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
 		put_object_on_map(game.map, game.current_level.moving[i]);
-		update_vertical(game, game.current_level.moving[i]);
+		update_vertical(game, game.current_level.moving[i]); //А зачем это надо?
 	}
 	
 	show_map(game.map);
@@ -291,7 +300,74 @@ void update_horizontal(GameState& game, Object& obj) {
 		obj.horizontal_speed = -obj.horizontal_speed;
 		return;
 	}
+	//Добавить провверку на врага, чтобы монеты падали, а враги - нет
 }
+
+
+void handle_contacts(GameState& game) {
+	for (size_t i = 0; i < game.current_level.moving.size(); ++i) {
+		if (is_collision(game.character, game.current_level.moving[i])) {
+			if (game.current_level.moving[i].type == 'o') {
+				if (game.character.is_fly && game.character.vertical_speed > 0 &&
+					game.character.y + game.character.height < 
+						game.current_level.moving[i].y + 
+						game.current_level.moving[i].height * 0.5) {
+					game.current_level.moving[i].is_alive = false;
+				} else {
+					game.character.is_alive = false;
+				}
+			}
+		}
+	}
+}
+/*
+
+void handle_contacts(GameState& game) {
+	//переименовать функцию find_brick_collision в find_object_collision?
+	int moving_index = find_brick_collision(game.current_level.moving, game.character);
+	
+	if (moving_index >= 0) {
+		if (game.current_level.moving[moving_index].type == '$') {
+			//TO DO
+		}
+		if (game.current_level.moving[moving_index].type == 'o') {
+			if (game.character.is_fly &&
+				game.character.vertical_speed > 0 &&
+				game.character.y + game.character.height < 
+					game.current_level.moving[moving_index].y + 
+					game.current_level.moving[moving_index].height * 0.5) {
+				game.current_level.moving[moving_index].is_alive = false;
+			}
+		}
+	}
+}
+*/
+
+void clear_dead_objects(std::vector<Object>& moving) {
+	for (size_t i = 0; i < moving.size(); ) {
+		if (!moving[i].is_alive) {
+			moving[i] = moving.back();
+			moving.pop_back();
+		} else {
+			i++;
+		}
+	}
+}
+
+void process_events(GameState& game) {
+	if (!game.character.is_alive) {
+		game.current_level.bricks.clear();
+		game.current_level.moving.clear();
+		game.character = init_object(39, 10, 3, 3, '@');
+		game.character.is_alive = true; //Может быть дорабоать функцию инициализации объектов?
+		init_level(game.level_number, game.current_level);
+	}
+}
+/*
+void delete_moving(std::vector<Object>& moving, int moving_index) {
+	
+}
+*/
 //void vertical_brick_contact()
 /*
 Понадобится функция, которая будет принимать Object и делать push_back к game.current_level.moving, чтобы добавлять
@@ -362,27 +438,3 @@ Level init_level(int level) {
 	}
 }
 */
-
-
-/*
-Запрос к нейросети:
-Хорошо, я понял. Пока что я создам массивы bricks и moving для каждого уровня, объединю их в структуры (по уровням), 
-а потом создам массив структур-уровней. Но как решить проблему добавления в массив новых движущихся объектов 
-(монет, полученных из блоков '?') и удаления таких объектов (собранных монет и побеждённых врагов)?
-*/
-
-
-/*
-void clear_map(std::vector<std::string>& map) {
-	for (std::string& row : map) {
-		row = std::string(MAP_WIDTH, '.');
-	}
-}
-
-void show_map(const std::vector<std::string>& map) {
-	for (const std::string& row : map) {
-		printf("%s", row.c_str());
-	}
-}
-*/
-
