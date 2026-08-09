@@ -27,6 +27,7 @@ struct GameState {
 	Object character;
 	Level current_level;
 	int level_number = 1;
+	bool level_complete = false;
 };
 
 
@@ -73,7 +74,6 @@ int main() {
 	
 	return 0;
 }
-//Нужно будет как-нибудь очищать векторы уровня перед загрузкой в них нового уровня
 
 
 
@@ -169,8 +169,8 @@ void init_level(int level_number, Level& current_level) {
 		
 		case 3:
 			current_level.bricks.push_back(init_object(20, 20, 40, 5, '#'));
-			current_level.bricks.push_back(init_object(80, 20, 15, 10, '#'));
-			current_level.bricks.push_back(init_object(20, 15, 15, 10, '#'));
+			current_level.bricks.push_back(init_object(80, 20, 15, 5, '#'));
+			current_level.bricks.push_back(init_object(120, 15, 15, 10, '#'));
 			current_level.bricks.push_back(init_object(160, 10, 15, 15, '+'));
 			
 			current_level.moving.push_back(init_object(25, 10, 3, 2, 'o'));
@@ -184,7 +184,6 @@ void init_level(int level_number, Level& current_level) {
 	}
 }
 
-//Может быть стоит потом написать отдельную функцию для разрешения коллизий?
 bool is_collision(const Object& obj1, const Object& obj2) {
 	return (obj1.x + obj1.width > obj2.x && obj1.x < obj2.x + obj2.width &&
 			obj1.y + obj1.height > obj2.y && obj1.y < obj2.y + obj2.height);
@@ -257,6 +256,9 @@ void handle_input(GameState& game) {
 
 void update_player(GameState& game) {
 	update_vertical (game, game.character);
+	if (game.character.y > MAP_HEIGHT) {
+		game.character.is_alive = false;
+	}
 }
 
 void update_moving(GameState& game) {
@@ -284,7 +286,7 @@ void render(GameState& game) {
 	}
 	for (size_t i = 0; i != game.current_level.moving.size(); ++i) {
 		put_object_on_map(game.map, game.current_level.moving[i]);
-		update_vertical(game, game.current_level.moving[i]); //А зачем это надо?
+		//update_vertical(game, game.current_level.moving[i]); //А зачем это надо?
 	}
 	
 	show_map(game.map);
@@ -317,8 +319,32 @@ void handle_contacts(GameState& game) {
 					game.character.is_alive = false;
 				}
 			}
+			//Здесь нужно будет дообавить взаимодействия с монетой
 		}
 	}
+	
+	Object tmp = game.character;
+	tmp.y += 1;
+	for (size_t i = 0; i < game.current_level.bricks.size(); ++i) {
+		if (game.current_level.bricks[i].type == '+') {
+			if (is_collision(tmp, game.current_level.bricks[i])) {
+				game.level_complete = true;
+			}
+		}
+	}
+	tmp.y -= 2;
+	for (size_t i = 0; i < game.current_level.bricks.size(); ++i) {
+		if (game.current_level.bricks[i].type == '?') {
+			if (is_collision(tmp, game.current_level.bricks[i])) {
+				game.current_level.bricks[i].type = '-';
+				//Добавить монету
+			}
+		}
+	}
+	//Проверка на касание блоков '?'
+	//Добавить сюда проход по всем блокам, определение коллизий с + и ?
+	//в случае ? блоков проверять, что персонаж снизу (character.y < brick[i].y)
+	//(Всегда можно перенести это в функцию движения)
 }
 /*
 
@@ -354,16 +380,31 @@ void clear_dead_objects(std::vector<Object>& moving) {
 	}
 }
 
+void clear_level(Level& current_level) {
+	current_level.bricks.clear();
+	current_level.moving.clear();
+}
+
 void process_events(GameState& game) {
 	if (!game.character.is_alive) {
-		game.current_level.bricks.clear();
-		game.current_level.moving.clear();
+		clear_level(game.current_level);
 		game.character = init_object(39, 10, 3, 3, '@');
 		game.character.is_alive = true; //Может быть дорабоать функцию инициализации объектов?
 		init_level(game.level_number, game.current_level);
 	}
+	if (game.level_complete) {
+		game.level_number++;
+		if (game.level_number > 3) game.level_number = 1;
+		clear_level(game.current_level);
+		game.character = init_object(39, 10, 3, 3, '@');
+		init_level(game.level_number, game.current_level);
+		game.level_complete = false;
+	}
 }
 /*
+
+
+
 void delete_moving(std::vector<Object>& moving, int moving_index) {
 	
 }
@@ -375,7 +416,7 @@ void delete_moving(std::vector<Object>& moving, int moving_index) {
 Передаём game (или сразу current_level (или вообще bricks)) (по ссылке?) и номер уровня в функцию, которая будет вызывать
 функцию, состоящую из game.current_level.bricks.push_back(init_object(20, 20, 40, 5, '#')) нужное количество раз и 
 с нужными параметрами в зависимости от уровня
-А может и так оставлю - хз
+А может и так оставлю
 Понадобится функция, которая будет менять местами удаляемый Object с последним, после чего делать pop_back
 
 Я придумал: нужна функция, которая принимает вектор объектов и объект (от init_object) и делает push_back; её будет
