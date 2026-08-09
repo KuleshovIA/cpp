@@ -300,11 +300,17 @@ void update_horizontal(GameState& game, Object& obj) {
 	if (brick_index >= 0) {
 		obj.x -= obj.horizontal_speed;
 		obj.horizontal_speed = -obj.horizontal_speed;
-		return;
 	}
-	//Добавить провверку на врага, чтобы монеты падали, а враги - нет
+	
+	if (obj.type == 'o') {
+		Object tmp = obj;
+		tmp.y += 1;
+		if (find_brick_collision(game.current_level.bricks, tmp) < 0) {
+			obj.x -= obj.horizontal_speed;
+			obj.horizontal_speed = -obj.horizontal_speed;
+		}
+	}
 }
-
 
 void handle_contacts(GameState& game) {
 	for (size_t i = 0; i < game.current_level.moving.size(); ++i) {
