@@ -13,7 +13,7 @@ struct Object {
 	float width, height;
 	char type;
 	float horizontal_speed, vertical_speed;
-	bool is_fly = false; //Или TRUE?
+	bool is_fly = true; //Или TRUE?
 	bool is_alive = true;
 };
 
@@ -28,6 +28,7 @@ struct GameState {
 	Level current_level;
 	int level_number = 1;
 	bool level_complete = false;
+	int score = 0;
 };
 
 
@@ -57,14 +58,16 @@ void handle_contacts(GameState& game);
 void clear_dead_objects(std::vector<Object>& moving);
 void process_events(GameState& game);
 void spawn_coin(std::vector<Object>& moving, const Object& brick);
-void moving_contacts(std::vector<Object>& moving, Object& character);
+//void moving_contacts(std::vector<Object>& moving, Object& character);
+void moving_contacts(GameState& game);
 void bricks_contacts(GameState& game);
+void put_score_on_map(char(&map)[][MAP_WIDTH + 1], int score);
 
 
 
 /*Может быть во всех функциях (или не во всех), что проверяют контакт персонажа с чем-то, лучше сделать
 принудительную проверку всех элементов вектора через цикл do while?*/
-//Надо будет "причесать" параметры функций, чтобы избежать слишком длинных обращений
+//Не надо
 int main() {
 	GameState game;
 	game.character = init_object(39, 10, 3, 3, '@');
@@ -346,6 +349,7 @@ void render(GameState& game) {
 		put_object_on_map(game.map, game.current_level.moving[i]);
 		//update_vertical(game, game.current_level.moving[i]); //А зачем это надо?
 	}
+	put_score_on_map(game.map, game.score);
 	
 	show_map(game.map);
 	Sleep(10);
@@ -410,23 +414,46 @@ void handle_contacts(GameState& game) {
 }
 */
 void handle_contacts(GameState& game) {
-	moving_contacts(game.current_level.moving, game.character);
+	moving_contacts(game); //.current_level.moving, game.character, game.score);
 	bricks_contacts(game);
 }
-
-void moving_contacts(std::vector<Object>& moving, Object& character) {
+/*
+void moving_contacts(std::vector<Object>& moving, Object& character, int& score) {
 	for (size_t i = 0; i < moving.size(); ++i) {
 		if (is_collision(character, moving[i])) {
 			if (moving[i].type == 'o') {
 				if (character.is_fly && character.vertical_speed > 0 &&
 					character.y + character.height < moving[i].y + moving[i].height * 0.5) {
 					moving[i].is_alive = false;
+					scoree += 50;
 				} else {
 					character.is_alive = false;
 				}
 			}
 			if (moving[i].type == '$') {
 				moving[i].is_alive = false;
+				score += 100;
+			}
+		}
+	}
+}
+*/
+void moving_contacts(GameState& game) {
+	for (size_t i = 0; i < game.current_level.moving.size(); ++i) {
+		if (is_collision(game.character, game.current_level.moving[i])) {
+			if (game.current_level.moving[i].type == 'o') {
+				if (game.character.is_fly && game.character.vertical_speed > 0 &&
+					game.character.y + game.character.height < 
+					game.current_level.moving[i].y + game.current_level.moving[i].height * 0.5) {
+						game.current_level.moving[i].is_alive = false;
+						game.score += 50;
+				} else {
+					game.character.is_alive = false;
+				}
+			}
+			if (game.current_level.moving[i].type == '$') {
+				game.current_level.moving[i].is_alive = false;
+				game.score += 100;
 			}
 		}
 	}
@@ -507,7 +534,17 @@ void process_events(GameState& game) {
 		clear_level(game.current_level);
 		game.character = init_object(39, 10, 3, 3, '@');
 		init_level(game.level_number, game.current_level);
+		game.score = 0;
 		game.level_complete = false;
+	}
+}
+
+void put_score_on_map(char(&map)[][MAP_WIDTH + 1], int score) {
+	char c[15];
+	sprintf (c, "Score: %d", score);
+	int len = strlen(c);
+	for (int i = 0; i < len; i++) {
+		map[1][i + 5] = c[i];
 	}
 }
 /*
