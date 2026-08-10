@@ -123,18 +123,70 @@ Object init_object(float x_pos, float y_pos, float o_width, float o_height, char
 	return Object {x_pos, y_pos, o_width, o_height, in_type, 0.2, 0};
 }
 
-/*
-void add_object(std::vector<Object>& recipient) {
-	recipient.push_back(init_object(???));
+void add_object(std::vector<Object>& recipient, Object obj) {
+	recipient.push_back(obj);
 }
-*/
-/*
-void add_object(std::vector<Object>& recipient, Object obj) {//Нужна ли вообще эта функция?
-	recipient.push_back(obj); //Или лучше здесь вызывать init_object?
-}
-*/
+
 //Возможно, нужно будет переделать с использованием функции выше (когда она понадобится) 
 //Вот так: add_object (current_level.bricks, init_object(...))
+
+void init_level(int level_number, Level& current_level) {
+	switch (level_number) {
+		case 1:
+			add_object(current_level.bricks, init_object(20, 20, 40, 5, '#'));
+			add_object(current_level.bricks, init_object(60, 15, 40, 10, '#'));
+			add_object(current_level.bricks, init_object(100, 20, 20, 5, '#'));
+			add_object(current_level.bricks, init_object(120, 15, 10, 10, '#'));
+			add_object(current_level.bricks, init_object(150, 20, 40, 5, '#'));
+			add_object(current_level.bricks, init_object(60, 5, 10, 3, '-'));
+			add_object(current_level.bricks, init_object(75, 5, 5, 3, '-'));
+			add_object(current_level.bricks, init_object(85, 5, 10, 3, '-'));
+			add_object(current_level.bricks, init_object(30, 10, 5, 3, '?'));
+			add_object(current_level.bricks, init_object(50, 10, 5, 3, '?'));
+			add_object(current_level.bricks, init_object(70, 5, 5, 3, '?'));
+			add_object(current_level.bricks, init_object(80, 5, 5, 3, '?'));
+			add_object(current_level.bricks, init_object(210, 15, 10, 10, '+'));
+			
+			add_object(current_level.moving, init_object(25, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(80, 10, 3, 2, 'o'));
+			
+			break;
+			
+		case 2:
+			add_object(current_level.bricks, init_object(20, 20, 40, 5, '#'));
+			add_object(current_level.bricks, init_object(60, 15, 10, 10, '#'));
+			add_object(current_level.bricks, init_object(80, 20, 20, 5, '#'));
+			add_object(current_level.bricks, init_object(120, 15, 10, 10, '#'));
+			add_object(current_level.bricks, init_object(150, 20, 40, 5, '#'));
+			add_object(current_level.bricks, init_object(210, 15, 10, 10, '+'));
+			
+			add_object(current_level.moving, init_object(25, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(80, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(65, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(120, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(160, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(175, 10, 3, 2, 'o'));
+			
+			break;
+			
+		case 3:
+			add_object(current_level.bricks, init_object(20, 20, 40, 5, '#'));
+			add_object(current_level.bricks, init_object(80, 20, 15, 5, '#'));
+			add_object(current_level.bricks, init_object(120, 15, 15, 10, '#'));
+			add_object(current_level.bricks, init_object(160, 10, 15, 15, '+'));
+			
+			add_object(current_level.moving, init_object(25, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(50, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(80, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(90, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(120, 10, 3, 2, 'o'));
+			add_object(current_level.moving, init_object(130, 10, 3, 2, 'o'));
+			
+			break;
+	}
+}
+
+/*
 void init_level(int level_number, Level& current_level) {
 	switch (level_number) {
 		case 1:
@@ -183,6 +235,7 @@ void init_level(int level_number, Level& current_level) {
 			break;
 	}
 }
+*/
 
 bool is_collision(const Object& obj1, const Object& obj2) {
 	return (obj1.x + obj1.width > obj2.x && obj1.x < obj2.x + obj2.width &&
