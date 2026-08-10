@@ -72,6 +72,7 @@ int main() {
 	GameState game;
 	game.character = init_object(39, 10, 3, 3, '@');
 	init_level(game.level_number, game.current_level);
+	system("color 9F");
 	//game.current_level = init_level(game.level);
 	do {
 		handle_input(game);
@@ -86,7 +87,7 @@ int main() {
 
 void clear_map(char(&map)[][MAP_WIDTH + 1]) {
 	for (int i = 0; i < MAP_WIDTH; i++) {
-		map[0][i] = '.';
+		map[0][i] = ' ';
 	}
 	map[0][MAP_WIDTH] = '\0';
 	for (int j = 1; j < MAP_HEIGHT; j++) {
@@ -527,6 +528,9 @@ void process_events(GameState& game) {
 		game.character = init_object(39, 10, 3, 3, '@');
 		game.character.is_alive = true; //Может быть дорабоать функцию инициализации объектов?
 		init_level(game.level_number, game.current_level);
+		system("color 4F");
+		Sleep(500);
+		system("color 9F");
 	}
 	if (game.level_complete) {
 		game.level_number++;
@@ -536,6 +540,9 @@ void process_events(GameState& game) {
 		init_level(game.level_number, game.current_level);
 		game.score = 0;
 		game.level_complete = false;
+		system("color 2F");
+		Sleep(500);
+		system("color 9F");
 	}
 }
 
