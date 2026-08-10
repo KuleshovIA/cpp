@@ -45,18 +45,20 @@ void apply_gravity(Object& obj);
 void vertical_move(Object& obj);
 int find_brick_collision(const std::vector<Object>& bricks, const Object& obj);
 void resolve_vertical_collision(Object& obj, const Object& brick);
-void update_vertical(GameState& game, Object& obj);
+void update_vertical(const GameState& game, Object& obj);
 void horizontal_move_map(GameState& game, float dx);
 void handle_input(GameState& game);
 void update_player(GameState& game);
 void update_moving(GameState& game);
 void update(GameState& game);
 void render(GameState& game);
-void update_horizontal(GameState& game, Object& obj);
+void update_horizontal(const GameState& game, Object& obj);
 void handle_contacts(GameState& game);
 void clear_dead_objects(std::vector<Object>& moving);
 void process_events(GameState& game);
-void spawn_coin(Level& current_level, const Object& brick);
+void spawn_coin(std::vector<Object>& moving, const Object& brick);
+void moving_contacts(std::vector<Object>& moving, Object& character);
+void bricks_contacts(GameState& game);
 
 
 
@@ -263,7 +265,7 @@ int find_brick_collision(const std::vector<Object>& bricks, const Object& obj) {
 	return -1;
 }
 
-void resolve_vertical_collision(Object& obj, Object& brick) {
+void resolve_vertical_collision(Object& obj, const Object& brick) {
 	if (obj.vertical_speed > 0) {
 		obj.y = brick.y - obj.height;
 		obj.is_fly = false;
@@ -273,7 +275,7 @@ void resolve_vertical_collision(Object& obj, Object& brick) {
 	obj.vertical_speed = 0;
 }
 
-void update_vertical(GameState& game, Object& obj) {
+void update_vertical(const GameState& game, Object& obj) {
 	apply_gravity(obj);
 	vertical_move(obj);
 	
@@ -349,7 +351,7 @@ void render(GameState& game) {
 	Sleep(10);
 }
 
-void update_horizontal(GameState& game, Object& obj) {
+void update_horizontal(const GameState& game, Object& obj) {
 	obj.x += obj.horizontal_speed;
 	
 	int brick_index = find_brick_collision(game.current_level.bricks, obj);
@@ -367,7 +369,7 @@ void update_horizontal(GameState& game, Object& obj) {
 		}
 	}
 }
-
+/*
 void handle_contacts(GameState& game) {
 	for (size_t i = 0; i < game.current_level.moving.size(); ++i) {
 		if (is_collision(game.character, game.current_level.moving[i])) {
@@ -381,7 +383,9 @@ void handle_contacts(GameState& game) {
 					game.character.is_alive = false;
 				}
 			}
-			//Здесь нужно будет дообавить взаимодействия с монетой
+			if (game.current_level.moving[i].type == '$') {
+				game.current_level.moving[i].is_alive = false;
+			}
 		}
 	}//Вынести в отдельную функцию и передать в неё только moving и character (наверное), ну, толоько необходимое в общем
 	
@@ -404,9 +408,52 @@ void handle_contacts(GameState& game) {
 		}
 	}//Ну это тоже нужно в отдельную функцию
 }
+*/
+void handle_contacts(GameState& game) {
+	moving_contacts(game.current_level.moving, game.character);
+	bricks_contacts(game);
+}
 
-void spawn_coin(Level& current_level, const Object& brick) {
-	add_object(current_level.moving, init_object(brick.x, brick.y - 3, 3, 2, '$', -0.7));
+void moving_contacts(std::vector<Object>& moving, Object& character) {
+	for (size_t i = 0; i < moving.size(); ++i) {
+		if (is_collision(character, moving[i])) {
+			if (moving[i].type == 'o') {
+				if (character.is_fly && character.vertical_speed > 0 &&
+					character.y + character.height < moving[i].y + moving[i].height * 0.5) {
+					moving[i].is_alive = false;
+				} else {
+					character.is_alive = false;
+				}
+			}
+			if (moving[i].type == '$') {
+				moving[i].is_alive = false;
+			}
+		}
+	}
+}
+
+void bricks_contacts(GameState& game) {
+	Object tmp = game.character;
+	tmp.y -= 1;
+	tmp.height += 2;
+	for (size_t i = 0; i < game.current_level.bricks.size(); ++i) {
+		if (game.current_level.bricks[i].type == '+') {
+			if (is_collision(tmp, game.current_level.bricks[i])) {
+				game.level_complete = true;
+			}
+		}
+		if (game.current_level.bricks[i].type == '?') {
+			if (is_collision(tmp, game.current_level.bricks[i]) &&
+				game.character.y > game.current_level.bricks[i].y) {
+				game.current_level.bricks[i].type = '-';
+				spawn_coin(game.current_level.moving, game.current_level.bricks[i]);
+			}
+		}
+	}
+} 
+
+void spawn_coin(std::vector<Object>& moving, const Object& brick) {
+	add_object(moving, init_object(brick.x, brick.y - 3, 3, 2, '$', -0.7));
 }
 /*
 
