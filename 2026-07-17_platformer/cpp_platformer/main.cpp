@@ -36,7 +36,8 @@ void show_map(const char(&map)[][MAP_WIDTH + 1]);
 void set_cursor(int x = 0, int y = 0);
 void put_object_on_map(char(&map)[][MAP_WIDTH + 1], const Object& obj);
 bool is_pos_in_map(int x, int y);
-Object init_object(float x_pos, float y_pos, float o_width, float o_height, char in_type);
+Object init_object(float x_pos, float y_pos, float o_width, float o_height, char in_type,
+				   float vertical_speed = 0, float horizontal_speed = 0.2);
 void init_level(int level_number, Level& current_level);
 bool is_collision(const Object& obj1, const Object& obj2);
 //Level init_level(int level);
@@ -55,6 +56,7 @@ void update_horizontal(GameState& game, Object& obj);
 void handle_contacts(GameState& game);
 void clear_dead_objects(std::vector<Object>& moving);
 void process_events(GameState& game);
+void spawn_coin(Level& current_level, const Object& brick);
 
 
 
@@ -119,8 +121,9 @@ bool is_pos_in_map(int x, int y) {
 	return (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT);
 }
 
-Object init_object(float x_pos, float y_pos, float o_width, float o_height, char in_type) { //добавить сюда параметры горизонтальной и вертикальной скоростей, установленные значениями по умолчанию
-	return Object {x_pos, y_pos, o_width, o_height, in_type, 0.2, 0};
+Object init_object(float x_pos, float y_pos, float o_width, float o_height, char in_type, 
+				   float vertical_speed, float horizontal_speed) {
+	return Object {x_pos, y_pos, o_width, o_height, in_type, horizontal_speed, vertical_speed};
 }
 
 void add_object(std::vector<Object>& recipient, Object obj) {
@@ -371,8 +374,8 @@ void handle_contacts(GameState& game) {
 			if (game.current_level.moving[i].type == 'o') {
 				if (game.character.is_fly && game.character.vertical_speed > 0 &&
 					game.character.y + game.character.height < 
-						game.current_level.moving[i].y + 
-						game.current_level.moving[i].height * 0.5) {
+					game.current_level.moving[i].y + 
+					game.current_level.moving[i].height * 0.5) {
 					game.current_level.moving[i].is_alive = false;
 				} else {
 					game.character.is_alive = false;
@@ -380,7 +383,7 @@ void handle_contacts(GameState& game) {
 			}
 			//Здесь нужно будет дообавить взаимодействия с монетой
 		}
-	}
+	}//Вынести в отдельную функцию и передать в неё только moving и character (наверное), ну, толоько необходимое в общем
 	
 	Object tmp = game.character;
 	tmp.y += 1;
@@ -396,14 +399,14 @@ void handle_contacts(GameState& game) {
 		if (game.current_level.bricks[i].type == '?') {
 			if (is_collision(tmp, game.current_level.bricks[i])) {
 				game.current_level.bricks[i].type = '-';
-				//Добавить монету
+				spawn_coin(game.current_level, game.current_level.bricks[i]);
 			}
 		}
-	}
-	//Проверка на касание блоков '?'
-	//Добавить сюда проход по всем блокам, определение коллизий с + и ?
-	//в случае ? блоков проверять, что персонаж снизу (character.y < brick[i].y)
-	//(Всегда можно перенести это в функцию движения)
+	}//Ну это тоже нужно в отдельную функцию
+}
+
+void spawn_coin(Level& current_level, const Object& brick) {
+	add_object(current_level.moving, init_object(brick.x, brick.y - 3, 3, 2, '$', -0.7));
 }
 /*
 
